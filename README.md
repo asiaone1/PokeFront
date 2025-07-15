@@ -251,4 +251,4 @@ npm install
 
 **¡Atrapa todos los Pokemon!** 🔴⚪
 
-Desarrollado por Alejandro CHuy Zhou con ❤️.
+Desarrollado por Alejandro Chuy Zhou con ❤️.
