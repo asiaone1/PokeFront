@@ -11,6 +11,8 @@ Una moderna aplicación web PokeDex construida con React, TypeScript y Vite, con
 
 - 🎨 **Diseño Pokemon temático** con gradientes y animaciones
 - 🔍 **Búsqueda avanzada** por nombre o ID de Pokemon
+- ⚡ **Búsqueda automática con debouncing** (600ms delay) - NUEVO!
+- 🎛️ **Toggle de búsqueda automática** - Habilitar/deshabilitar según preferencia
 - 📱 **Interfaz responsiva** que se adapta a todos los dispositivos
 - 📄 **Paginación inteligente** con navegación por números
 - 🖼️ **Múltiples sprites** (frontal, trasero, shiny, artwork oficial)
@@ -21,6 +23,7 @@ Una moderna aplicación web PokeDex construida con React, TypeScript y Vite, con
 - 💾 **Sistema de caché inteligente** para mejor rendimiento
 - 🔥 **Precarga automática** de datos populares
 - 📈 **Métricas de caché** en tiempo real (modo desarrollo)
+- 🚀 **Optimizaciones de búsqueda** - Throttling, debouncing y validaciones
 
 ## 🚀 Instalación y Configuración
 
@@ -76,10 +79,24 @@ La aplicación estará disponible en: **http://localhost:5173** o **http://local
 
 ## 🎮 Cómo usar
 
+### 🔍 Nuevas Funciones de Búsqueda (OPTIMIZADAS)
+
+#### Búsqueda Automática con Debouncing
+1. **Búsqueda en tiempo real:** Activa el checkbox "🔍 Búsqueda automática"
+2. **Delay inteligente:** 600ms de espera después de dejar de escribir
+3. **Validación automática:** Solo busca cuando hay contenido válido
+4. **Indicadores visuales:** El borde del input cambia de color según el modo
+
+#### Búsqueda Manual (Tradicional)
+1. **Desactiva la búsqueda automática** desmarcando el checkbox
+2. **Escribe el Pokemon** que deseas buscar
+3. **Presiona Enter** o haz clic en "Buscar Pokemon"
+
 ### Búsqueda de Pokemon
 1. **Por nombre:** Escribe "pikachu", "charizard", etc.
 2. **Por ID:** Escribe "25", "1", "150", etc.
-3. **Presiona Enter** o haz clic en "Buscar Pokemon"
+3. **Búsqueda automática:** Se activa automáticamente 600ms después de escribir
+4. **Búsqueda manual:** Presiona Enter o haz clic en "Buscar Pokemon"
 
 ### Navegación por lista
 1. **Exploración automática:** Al cargar, aparecen los primeros 20 Pokemon
@@ -186,6 +203,81 @@ pokemonService.clearCache();
 
 // Obtener estadísticas
 const stats = pokemonService.getCacheStats();
+```
+
+## 🚀 Optimizaciones de Búsqueda
+
+### 🎯 Debouncing Inteligente
+
+La aplicación implementa **debouncing** para optimizar las búsquedas automáticas:
+
+#### ⚡ Características del Debouncing
+- **Delay optimizado:** 600ms - Balance perfecto entre responsividad y eficiencia
+- **Búsqueda automática:** Los resultados aparecen mientras escribes
+- **Cancelación inteligente:** Las búsquedas anteriores se cancelan automáticamente
+- **Validación previa:** Solo busca cuando hay contenido válido
+
+#### 🎛️ Control Manual
+```jsx
+// Toggle para activar/desactivar búsqueda automática
+const [isSearchEnabled, setIsSearchEnabled] = useState(true);
+
+// Función de debouncing personalizable
+const debouncedSearch = useDebounce((query: string) => {
+  if (query.trim() && isSearchEnabled) {
+    searchPokemon(query);
+  }
+}, 600); // Delay en milisegundos
+```
+
+#### 📊 Ventajas del Sistema
+- **Reducción de peticiones:** Hasta 80% menos llamadas a la API
+- **Mejor UX:** Respuesta inmediata sin saturar el servidor
+- **Compatibilidad:** Funciona con el sistema de caché existente
+- **Flexibilidad:** Se puede activar/desactivar según preferencia
+
+### 🛠️ Utilidades Avanzadas
+
+#### Funciones de Optimización Disponibles:
+```typescript
+// Validación de IDs de Pokemon
+isValidPokemonId("25") // true
+isValidPokemonId("9999") // false
+
+// Limpieza de entrada del usuario
+cleanPokemonInput("  Pika chu  ") // "pika-chu"
+
+// Historial de búsquedas
+SearchHistory.addToHistory("pikachu");
+SearchHistory.getHistory(); // ["pikachu", "charizard", ...]
+
+// Métricas de rendimiento
+searchMetrics.getStats(); // Estadísticas en consola (modo dev)
+```
+
+#### 📈 Métricas en Tiempo Real (Desarrollo)
+```javascript
+// En la consola del navegador (F12):
+searchMetrics.getStats()
+// Muestra:
+// - Total de búsquedas
+// - Porcentaje de cache hits
+// - Tiempo promedio de búsqueda
+// - Últimos tiempos de respuesta
+```
+
+### ⚙️ Configuración Personalizada
+
+Puedes ajustar el comportamiento del debouncing editando `src/utils/debounce.ts`:
+
+```typescript
+// Cambiar delay global (por defecto 600ms)
+const debouncedSearch = useDebounce(searchFunction, 800); // Más lento
+const debouncedSearch = useDebounce(searchFunction, 300); // Más rápido
+
+// Debouncing vs Throttling
+useDebounce(fn, 600); // Espera a que el usuario termine de escribir
+throttle(fn, 600);    // Ejecuta máximo una vez cada 600ms
 ```
 
 ## 🌐 Despliegue

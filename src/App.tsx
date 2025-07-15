@@ -1,17 +1,20 @@
 import { useState, useRef, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { pokemonService } from './services/pokemonService'
 import type { PokemonData } from './services/pokemonService'
 import { PokemonList } from './components/PokemonList'
+import { debounce } from './utils/debounce'
 
 function App() {
   const [pokemon, setPokemon] = useState<PokemonData | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isSearchEnabled, setIsSearchEnabled] = useState(true) // Nueva funcionalidad para toggle de búsqueda automática
   const pokemonDetailsRef = useRef<HTMLDivElement>(null)
+  
+  // Crear función de debouncing estable usando useRef
+  const debouncedSearchRef = useRef<((query: string) => void) | null>(null)
 
   // Inicializar caché al cargar la aplicación
   useEffect(() => {
@@ -27,9 +30,15 @@ function App() {
     initializeCache();
   }, []);
 
+  // Debug: Monitorear cambios en el state del Pokemon
+  useEffect(() => {
+    console.log('📊 Pokemon state cambió:', pokemon ? `${pokemon.name} (#${pokemon.id})` : 'null')
+  }, [pokemon])
+
+  // Función de búsqueda principal
   const searchPokemon = async (query?: string) => {
     const searchQuery = query || searchTerm.trim()
-    console.log('Buscando Pokemon:', searchQuery) // Debug
+    console.log('🔍 searchPokemon llamada con:', { query, searchTerm, searchQuery, isSearchEnabled })
     if (!searchQuery) return
 
     setLoading(true)
@@ -37,9 +46,9 @@ function App() {
     
     try {
       const pokemonData = await pokemonService.searchPokemon(searchQuery)
-      console.log('Pokemon encontrado:', pokemonData) // Debug
+      console.log('✅ Pokemon encontrado:', pokemonData.name)
       setPokemon(pokemonData)
-      setSearchTerm(searchQuery) // Actualizar el input con la búsqueda exitosa
+      console.log('✅ Pokemon state actualizado')
       
       // Scroll automático a los detalles del Pokemon
       setTimeout(() => {
@@ -50,11 +59,44 @@ function App() {
       }, 100)
       
     } catch (err) {
-      console.error('Error buscando Pokemon:', err)
+      console.error('❌ Error buscando Pokemon:', err)
       setError('Pokemon no encontrado. Verifica que tu backend esté funcionando y que el Pokemon exista.')
       setPokemon(null)
     } finally {
       setLoading(false)
+      console.log('🏁 Búsqueda finalizada')
+    }
+  }
+
+  // Inicializar función de debouncing estable
+  useEffect(() => {
+    debouncedSearchRef.current = debounce((query: string) => {
+      if (query.trim() && isSearchEnabled) {
+        console.log('Ejecutando búsqueda debounced:', query)
+        searchPokemon(query)
+      }
+    }, 600)
+  }, [isSearchEnabled]) // Recrear solo cuando cambie el estado de búsqueda automática
+
+  // Manejar cambios en el input de búsqueda
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchTerm(value)
+    
+    console.log('Input changed:', value, 'Auto search enabled:', isSearchEnabled)
+    
+    // Limpiar error siempre
+    setError('')
+    
+    // Si está vacío, no hacer nada más
+    if (!value.trim()) {
+      return
+    }
+    
+    // Activar búsqueda con debouncing solo si está habilitada
+    if (isSearchEnabled && debouncedSearchRef.current) {
+      console.log('Triggering debounced search for:', value)
+      debouncedSearchRef.current(value)
     }
   }
 
@@ -73,6 +115,23 @@ function App() {
     searchPokemon()
   }
 
+  // Toggle para habilitar/deshabilitar búsqueda automática
+  const toggleAutoSearch = () => {
+    setIsSearchEnabled(!isSearchEnabled)
+    if (!isSearchEnabled && searchTerm.trim()) {
+      // Si se habilita la búsqueda automática y hay texto, buscar inmediatamente
+      searchPokemon()
+    }
+  }
+
+  // Función para limpiar la búsqueda
+  const clearSearch = () => {
+    setSearchTerm('')
+    setError('')
+    setPokemon(null)
+    console.log('Search cleared')
+  }
+
   return (
     <>
       {/* <div>
@@ -87,18 +146,70 @@ function App() {
       <h1 className="pokemon-title">PokeDex React+Vite+ExpressJs</h1>
       
       <div className="pokemon-card">
-        <input
-          type="text"
-          placeholder="Busca un Pokemon (ej: pikachu, charizard...)"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={handleKeyPress}
-          className="pokemon-search"
-        />
-        
-        <button onClick={handleSearchClick} disabled={loading}>
-          {loading ? 'Buscando...' : 'Buscar Pokemon'}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <input
+            type="text"
+            placeholder={isSearchEnabled 
+              ? "Escribe para buscar automáticamente" 
+              : "Busca un Pokemon (ej: pikachu, charizard...)"
+            }
+            value={searchTerm}
+            onChange={handleSearchChange}
+            onKeyPress={handleKeyPress}
+            className="pokemon-search"
+            style={{
+              borderColor: isSearchEnabled ? '#4ECDC4' : '#FF6B6B',
+              boxShadow: isSearchEnabled 
+                ? '0 0 10px rgba(78, 205, 196, 0.3)' 
+                : '0 0 10px rgba(255, 107, 107, 0.3)'
+            }}
+          />
+          
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <button onClick={handleSearchClick} disabled={loading}>
+              {loading ? 'Buscando...' : 'Buscar Pokemon'}
+            </button>
+            
+            {(searchTerm || pokemon) && (
+              <button 
+                onClick={clearSearch}
+                style={{
+                  background: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.7rem 1rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+                title="Limpiar búsqueda"
+              >
+                🗑️ Limpiar
+              </button>
+            )}
+            
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              fontSize: '0.9rem',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="checkbox"
+                checked={isSearchEnabled}
+                onChange={toggleAutoSearch}
+                style={{ 
+                  transform: 'scale(1.2)',
+                  accentColor: '#4ECDC4'
+                }}
+              />
+              <span style={{ color: isSearchEnabled ? '#4ECDC4' : '#888' }}>
+                🔍 Búsqueda automática {isSearchEnabled ? '(600ms)' : '(desactivada)'}
+              </span>
+            </label>
+          </div>
+        </div>
         
         {error && (
           <p style={{ color: '#e74c3c', fontWeight: 'bold', marginTop: '1rem' }}>
@@ -107,9 +218,12 @@ function App() {
         )}
         
         <p className="pokemon-info">
-          Escribe el nombre o ID de un Pokemon y presiona Enter o haz clic en "Buscar Pokemon"
+          {isSearchEnabled 
+            ? "🚀 Búsqueda automática activada: Los Pokemon aparecerán automáticamente mientras escribes" 
+            : "Escribe el nombre o ID de un Pokemon y presiona Enter o haz clic en 'Buscar Pokemon'"
+          }
           <br />
-          <small>Conectado a tu backend Pokemon API</small>
+          <small>Conectado a tu backend Pokemon API | ⚡ Sistema de caché inteligente activado</small>
         </p>
       </div>
 
