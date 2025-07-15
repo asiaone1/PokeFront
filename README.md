@@ -108,22 +108,6 @@ npm run preview      # Previsualiza la construcción
 npm run lint         # Ejecuta ESLint para revisar el código
 ```
 
-## 📁 Estructura del proyecto
-
-```
-src/
-├── components/          # Componentes React
-│   └── PokemonList.tsx  # Lista con paginación
-├── config/             # Configuración
-│   └── api.ts          # URLs y endpoints del backend
-├── services/           # Servicios HTTP
-│   └── pokemonService.ts # Lógica de peticiones a la API
-├── assets/             # Recursos estáticos
-├── App.tsx             # Componente principal
-├── App.css             # Estilos Pokemon
-├── index.css           # Estilos globales
-└── main.tsx            # Punto de entrada
-```
 
 ## 🔧 Configuración del Backend
 
