@@ -1,0 +1,77 @@
+:root {
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Pokemon color scheme */
+  --pokemon-red: #FF6B6B;
+  --pokemon-blue: #4ECDC4;
+  --pokemon-yellow: #FFE66D;
+  --pokemon-green: #95E1D3;
+  --pokemon-purple: #A8E6CF;
+  --pokemon-orange: #FFB347;
+  --pokemon-dark: #2C3E50;
+  --pokemon-light: #ECF0F1;
+
+  color: #2C3E50;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: var(--pokemon-red);
+  text-decoration: inherit;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: var(--pokemon-yellow);
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  margin-bottom: 1rem;
+}
+
+button {
+  border-radius: 25px;
+  border: 3px solid var(--pokemon-yellow);
+  padding: 0.8em 1.5em;
+  font-size: 1.1em;
+  font-weight: 600;
+  font-family: inherit;
+  background: linear-gradient(45deg, var(--pokemon-red), var(--pokemon-orange));
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  background: linear-gradient(45deg, var(--pokemon-orange), var(--pokemon-yellow));
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto var(--pokemon-yellow);
+}
+
+

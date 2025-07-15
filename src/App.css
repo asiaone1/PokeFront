@@ -1,0 +1,113 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.pokemon-logo {
+  height: 8em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: all 300ms ease;
+  border-radius: 50%;
+}
+.pokemon-logo:hover {
+  filter: drop-shadow(0 0 2em #FFE66D);
+  transform: scale(1.1) rotate(5deg);
+}
+
+.pokeball-logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: all 300ms ease;
+}
+.pokeball-logo:hover {
+  filter: drop-shadow(0 0 2em #FF6B6B);
+  transform: rotate(180deg);
+}
+
+@keyframes pokeball-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pokeball-logo {
+    animation: pokeball-spin infinite 3s linear;
+  }
+  
+  .pokemon-logo {
+    animation: float infinite 2s ease-in-out;
+  }
+}
+
+.pokemon-card {
+  padding: 2em;
+  background: linear-gradient(135deg, #FFE66D 0%, #FF6B6B 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  margin: 1.5rem 0;
+  border: 3px solid white;
+}
+
+.pokemon-title {
+  background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: bold;
+  text-shadow: none;
+  margin-bottom: 1rem;
+}
+
+.pokemon-search {
+  padding: 1rem 1.5rem;
+  border: 3px solid #4ECDC4;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  background: white;
+  color: #2C3E50;
+  width: 100%;
+  max-width: 400px;
+  margin: 1rem 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.pokemon-search:focus {
+  outline: none;
+  border-color: #FF6B6B;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+}
+
+.pokemon-info {
+  color: #2C3E50;
+  font-weight: 500;
+}
+
+.pokemon-footer {
+  color: #2C3E50;
+  opacity: 0.8;
+  margin-top: 2rem;
+  font-weight: 500;
+}
