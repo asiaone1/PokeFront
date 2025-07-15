@@ -240,30 +240,26 @@ const debouncedSearch = useDebounce((query: string) => {
 
 #### Funciones de Optimización Disponibles:
 ```typescript
-// Validación de IDs de Pokemon
-isValidPokemonId("25") // true
-isValidPokemonId("9999") // false
+// Sistema de caché inteligente
+pokemonService.clearCache();
+pokemonService.getCacheStats();
 
-// Limpieza de entrada del usuario
-cleanPokemonInput("  Pika chu  ") // "pika-chu"
-
-// Historial de búsquedas
-SearchHistory.addToHistory("pikachu");
-SearchHistory.getHistory(); // ["pikachu", "charizard", ...]
-
-// Métricas de rendimiento
-searchMetrics.getStats(); // Estadísticas en consola (modo dev)
+// Métricas de rendimiento en modo desarrollo
+// En la consola del navegador (F12):
+pokemonCache.getStats()    // Ver estadísticas del caché
+pokemonCache.clear()       // Limpiar caché manualmente
+pokemonCache.warmup()      // Precargar datos populares
 ```
 
 #### 📈 Métricas en Tiempo Real (Desarrollo)
 ```javascript
 // En la consola del navegador (F12):
-searchMetrics.getStats()
+pokemonCache.getStats()
 // Muestra:
-// - Total de búsquedas
-// - Porcentaje de cache hits
-// - Tiempo promedio de búsqueda
-// - Últimos tiempos de respuesta
+// - Total de peticiones realizadas
+// - Hits y misses del caché
+// - Porcentaje de eficiencia
+// - Memoria utilizada
 ```
 
 ### ⚙️ Configuración Personalizada
@@ -277,7 +273,6 @@ const debouncedSearch = useDebounce(searchFunction, 300); // Más rápido
 
 // Debouncing vs Throttling
 useDebounce(fn, 600); // Espera a que el usuario termine de escribir
-throttle(fn, 600);    // Ejecuta máximo una vez cada 600ms
 ```
 
 ## 🌐 Despliegue
