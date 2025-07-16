@@ -74,7 +74,7 @@ export class CacheService {
   private setInMemory<T>(key: string, data: T, ttl: number): void {
     // Si llegamos al límite, eliminar el más antiguo
     if (this.memoryCache.size >= this.MAX_MEMORY_ITEMS) {
-      const firstKey = this.memoryCache.keys().next().value
+      const firstKey = this.memoryCache.keys().next().value 
       if (firstKey) {
         this.memoryCache.delete(firstKey)
       }
@@ -161,28 +161,18 @@ export class CacheService {
    * Limpiar elementos expirados de localStorage
    */
   private clearExpiredLocalStorage(): void {
+    
     try {
-      const keys = Object.keys(localStorage)
-      const pokemonKeys = keys.filter(key => key.startsWith('pokemon_cache_'))
       let cleaned = 0
-
-      pokemonKeys.forEach(key => {
-        try {
-          const stored = localStorage.getItem(key)
-          if (stored) {
-            const item: CacheItem<any> = JSON.parse(stored)
-            if (this.isExpired(item)) {
-              localStorage.removeItem(key)
-              cleaned++
-            }
+      for(const [key, value] of Object.entries(localStorage)) {
+        if (key.startsWith('pokemon_cache_')) {
+          const item: CacheItem<any> = JSON.parse(value)
+          if (this.isExpired(item)) {
+            localStorage.removeItem(key)
+            cleaned++
           }
-        } catch (error) {
-          // Si hay error parseando, eliminar
-          localStorage.removeItem(key)
-          cleaned++
         }
-      })
-
+      }
       if (cleaned > 0) {
         console.log(`🧹 Limpiados ${cleaned} elementos expirados de localStorage`)
       }
